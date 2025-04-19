@@ -15,14 +15,16 @@ obj/$(name).o: $(name).cpp
 
 all: $(hiro.objects) $(objects)
 	$(info Linking out/$(name) ...)
-	+@$(compiler) -o out/$(name) $(hiro.objects) $(objects) $(hiro.options) $(options)
 ifeq ($(platform),macos)
+	+@$(compiler) -o out/$(name) $(hiro.objects) $(objects) $(hiro.options) $(options) -framework IOKit
 	rm -rf out/$(name).app
 	mkdir -p out/$(name).app/Contents/MacOS/
 	mkdir -p out/$(name).app/Contents/Resources/
 	mv out/$(name) out/$(name).app/Contents/MacOS/$(name)
 	cp resource/$(name).plist out/$(name).app/Contents/Info.plist
 	sips -s format icns resource/$(name).png --out out/$(name).app/Contents/Resources/$(name).icns
+else
+	+@$(compiler) -o out/$(name) $(hiro.objects) $(objects) $(hiro.options) $(options)
 endif
 
 verbose: hiro.verbose nall.verbose all;
